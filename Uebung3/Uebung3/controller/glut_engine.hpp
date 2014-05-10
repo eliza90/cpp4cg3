@@ -2,6 +2,7 @@
 #include "engine.hpp"
 #include <exception>
 #include <iostream>
+#include <chrono>
 #include <memory>
 
 namespace view{
@@ -28,7 +29,7 @@ namespace view{
 		std::string _name;
 		size_t _width;
 		size_t _height;
-		int _glut_win_id;
+		int _glut_win_id;		
 	}; // Window
 
 	class DemoWindow: public Window
@@ -64,7 +65,7 @@ namespace controller {
 		virtual void run(){
 			try{
 				std::shared_ptr< view::Window > window(new view::Window(500, 500, "cpp4cg3-window"));	
-				std::shared_ptr< view::Window > window2(new view::Window(400, 300, "cpp4cg3-window2"));
+				//std::shared_ptr< view::Window > window2(new view::Window(400, 300, "cpp4cg3-window2"));
 			}
 			catch(std::logic_error){
 				std::cerr << "Caught: logic error in run()" << "\n";

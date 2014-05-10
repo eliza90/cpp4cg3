@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <freeglutPath>C:\Users\Natalie\Dropbox\TU Dresden\C++ für Computergrafik\Übungen\Aufgabe 3\Uebung3\freeglut-MSVC-2.8.1-1.mp\freeglut\</freeglutPath>
+    <freeglutPath>F:\Studium\1.Semester\C++CG\Uebungen\Uebung3_Glut\cpp4cg3\Uebung3\freeglut-MSVC-2.8.1-1.mp\freeglut\</freeglutPath>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>

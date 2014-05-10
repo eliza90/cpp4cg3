@@ -1,13 +1,32 @@
 #include "stdafx.h"
+#include <thread>
 #include "GL/freeglut.h"
 #include "glut_engine.hpp"
 
+
+
 using namespace view;
+
+Window *instance = NULL;
+
+auto val = 0.0;
+
+float rquad= 0.0f;// Angle For The Quad  
+
+void rotateInterval(){
+	if (rquad==360){
+		rquad=0;
+	}
+	else{
+		rquad = rquad + 0.72;
+	}
+}
 
 Window::Window(size_t width, size_t height, const std::string& name){
 	_width = width;
 	_height = height;
 	_name = name;
+	instance = this;
 
 	glutInitDisplayMode(GLUT_DOUBLE |  // DoubleBuffer verwenden
 						GLUT_RGB |     //Tiefenpuffer
@@ -18,8 +37,11 @@ Window::Window(size_t width, size_t height, const std::string& name){
 	//Create the window	
 	_glut_win_id = glutCreateWindow(name.c_str());
 	glutSetWindow(_glut_win_id);
-	//glutSetWindowData(this);//Zeiger auf die zugehörige Window - Instanz
-	////printf("Window id: %d, data: %p, this: %p\n", _glut_win_id, glutGetWindowData(), this);//p = pointeradress
+
+	glutSetWindowData(this);//Zeiger auf die Window - Instanz
+	//glutSetWindowData((void*)_glut_win_id);
+
+	printf("Window id: %d, data: %p, this: %p\n", _glut_win_id, glutGetWindowData(), this);//p = pointeradress
 
 	//Funktionszeiger Display
 	void(*funcDisplay_ptr)(void);
@@ -33,45 +55,103 @@ Window::Window(size_t width, size_t height, const std::string& name){
 	//Funktionszeiger Keyboard
 	void(*funcKeyboard_ptr)(unsigned char key, int xmouse, int ymouse);
 	funcKeyboard_ptr = &glutKeyboard;
-	glutKeyboardFunc(glutKeyboard);
+	glutKeyboardFunc(glutKeyboard);	
 }
 
 Window::~Window(){}
 
-void Window::ensureCurrent() const{
-	glutGetWindow();	
-	glutSetWindowData((void *)this);
-	Window *myWindow = static_cast<Window*>(glutGetWindowData());// cast from void* to Window*	
-	printf("Window id: %d, data: %p, this: %p\n", myWindow->id(), glutGetWindowData(), myWindow);//p = pointeradress
-	printf("Window id: %d, witdh: %d, heigth: %d\n", myWindow->id(), myWindow->width(), myWindow->height());
+void Window::ensureCurrent() const{	
+	//glutGetWindow();	
+	//printf("Window : %d\n", glutGetWindow());
+	//instance = static_cast<Window*>(glutGetWindowData());// cast from void* to Window*	
+	//printf("Window id: %d, data: %p, this: %p\n", instance->id(), glutGetWindowData(), instance);//p = pointeradress
+	//printf("Window id: %d, witdh: %d, heigth: %d\n", instance->id(), instance->width(), instance->height());
 
-	/*if (myWindow->id() < 0){
-		return false;
-	}
-	if (myWindow->id() != glutGetWindow()){
-		return false;
-	}*/
+	//int *id = static_cast<int*>(glutGetWindowData());
+	//printf("Window id: %d, initialid: %d,\n",id, _glut_win_id);
+
 }
 
 void Window::glutDisplay(void){		
-	//glutGetWindow();//determine which window should be updated
-	
-	//ensureCurrent();
-	//Window* myWindow = static_cast<Window *>(glutGetWindowData());
-	//printf("Window id: %d, data: %p, this: %p\n", myWindow->id(), glutGetWindowData(), myWindow);//p = pointeradress
-	//printf("Window id: %d, witdh: %d, heigth: %d\n", myWindow->id(), myWindow->width(), myWindow->height());
-	/*if (myWindow->ensureCurrent()){
-		myWindow->display();		
-	}
-	else{
-		std::cerr << "wrong window in glutDisplay" << "\n";
-	}*/
-	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+	//instance->ensureCurrent();
+	//instance->display();		
+	//std::cerr << "wrong window in glutDisplay" << "\n";
+
+	/*glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glutSwapBuffers();*/
+		
+	glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	//Projektionsmatrix einstellen
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluPerspective(30.0, 1.0, 2.0, 200.0);//angle, w/h ,near clipping, far clipping
+
+	gluLookAt(0.0, -7.0, 0.0, /* hier stehe ich */
+		0.0, 0.0, 0.0,  /* hier schaue ich hin */
+		0.0, 0.0, 0.1);  /* dieser Vektor zeigt senkrecht nach oben */
+	 
+
+	//Zeit seit Programmstart
+	std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+    auto tempVal = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+	tempVal = tempVal - val;;
+	if (tempVal > 1){
+		std::cout << "difference:" << tempVal << "\n";
+		rotateInterval();
+	}	
+	val =  std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+	//std::cout << "miliseconds since epoch:"	<< std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count()<< "us.\n";
+		
+	glRotatef(rquad, 0.0f, 0.0f, 1.0f);//(angle,x,y,z)
+
+	glBegin(GL_LINES);                                  // Draw A Quad 
+	glColor3f(0.75f, 0.75f, 0.75f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+
+	glVertex3f(1.0f, -1.0f, -1.0f);
+	glVertex3f(1.0f, 1.0f, -1.0f);
+
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	
+	glVertex3f(1.0f, 1.0f, -1.0f);
+	glVertex3f(1.0f, 1.0f, 1.0f);
+
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
+
+	glVertex3f(1.0f, -1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, -1.0f);
+	
+	glVertex3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glVertex3f(1.0f, -1.0f, 1.0f);
+	
+	glVertex3f(-1.0f, 1.0f, 1.0f);
+	glVertex3f(-1.0f, 1.0f, -1.0f);
+
+	glVertex3f(-1.0f, -1.0f, 1.0f);
+	glVertex3f(-1.0f, -1.0f, -1.0f);
+	glEnd();
+
 	glutSwapBuffers();
+	glutPostRedisplay();//später and display anpassen?!
 }
 
 bool Window::display(){
+	glutSwapBuffers();
 	glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	return true;
