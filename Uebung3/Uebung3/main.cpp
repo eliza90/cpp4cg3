@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#include "GL/freeglut.h"
 #include "cpp4cg3Functions.h"
 #include "controller/glut_engine.hpp"
-#include <memory>
 
 //void test1(int argc, char* argv[]){
 //	//Initialise GLUT with command-line parameters. 

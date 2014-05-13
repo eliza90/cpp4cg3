@@ -33,7 +33,16 @@
     <ClInclude Include="controller\glut_engine.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="view\window.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="view\stdafx.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
     <ClInclude Include="controller\stdafx.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="view\demoWindow.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,5 +56,14 @@
     <ClCompile Include="controller\glut_engine.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="view\window.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="view\demoWindow.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="extlibs.props" />
   </ItemGroup>
 </Project>
